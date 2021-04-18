@@ -1,0 +1,195 @@
+---
+title: "Untitled"
+author: "Miguel Lerdo de Tejada Flores"
+date: "17/4/2021"
+output: html_document
+header-includes :
+  \usepackage{booktabs}
+  \usepackage[utf8]{inputenc}
+  \usepackage{babel}
+  \usepackage{tabularx}
+  \usepackage{array}
+  \usepackage{natbib}
+  \usepackage{delarray}
+  \usepackage{dcolumn}
+  \usepackage{float}
+  \usepackage{amsmath}
+  \usepackage{psfrag}
+  \usepackage{multirow,hhline}
+  \usepackage{amstext}
+  \usepackage{pstricks}
+  \usepackage{pst-plot}
+  \usepackage{amssymb}
+  \usepackage{fancyhdr}
+  \usepackage{cite}
+  \usepackage{rotating}
+  \usepackage{textcomp}
+  \usepackage{natbib}
+  \usepackage{setspace}
+  \usepackage{booktabs}
+  \usepackage{hyperref}
+  \usepackage{pdflscape}
+  \usepackage{multirow}
+  \newcommand\doubleRule{\midrule\midrule}
+  \newcommand{\indep}{\perp \!\!\! \perp}
+  \newcommand{\notindep}{\not\indep}
+  \newcommand{\pr}[2]{\frac{\partial#1}{\partial#2}}
+  \newcommand{\re}[1]{\smallskip\textsc{Respuesta} \begin{it}\\#1 \end{it} \bigskip}\textwidth=480pt \textheight=610pt
+  \oddsidemargin=0in\topmargin=-.2in
+  \def\max{mathop{\mbox{\normalfont m\'ax}}\limits}
+  \def\min{mathop{\mbox{\normalfont m\'{i}n}}\limits}\usepackage{multirow,hhline}
+
+  
+---
+
+# Estimating Preferences for Schools 
+The purpose of this problem set is to estimate preferences for schools using a sample of real data from 5 educational markets. The context is Chile's primary education. You do not need more knowledge of the context to solve this problem set.I have uploaded a data set named  _data\_ps2.csv_, that contains individual level data with the following variables:
+  - market: indicator for market    
+  - schoolid:  fictitious school id    
+  - studentid: fictitious student id    
+  - choice: 1 if school is chosen, 0 otherwise    
+  - outside: 1 if outside school, 0 otherwise. Think of a student choosing the outside alternative if she chooses a school outside her market. We do not record the characteristics for the outside alternative    
+  - edMad\_lths: 1 if mother's highest level of schooling is less than highschool, 0 otherwise    
+  - edMad\_hs: 1 if mother's highest level of schooling is high school, 0 otherwise    
+  - edMad\_mths: 1 if mother's highest level of schooling is more than highschool, 0 otherwise    
+  - edMad\_miss: 1 if mother's highest level of schooling is not observed, 0 otherwise    
+  - distance: distance from home to school (10 km)    
+  - price: school's annual tuition (1,000 USD)    
+  - quality: continuous measure of school's value-added (test scores' standard deviations)    
+  - rural: 1 if school is located in a rural area, 0 otherwise    
+  - laica: 1 if school is secular, 0 otherwise    
+  - pub: 1 if school is public, 0 otherwise    
+  - jec: 1 if school provides a full day shift, 0 otherwise    
+  - v\_u: annual governmental per student subsidy received by the school (1,000 USD)    
+  - porc\_zona: vulnerability measure of the school's neighborhood    
+  - share\_prio: share of low-income families in the school's municipality 
+The data is ready to be used; however, depending on the question you are being asked, you might need to perform additional data manipulation.Note that I want you to explicitly code your programs (e.g. likelihood function, gradient, hessian) when performing nonlinear estimation/optimization. Only if you are asked to perform linear estimation you are allowed to use already written estimation commands (e.g. regress, ivregress, ivreg2 in STATA). Always report standard errors along with your point estimates. 
+
+## Aggregate Data 
+
+This section utilizes aggregate data. We are interested in the following preferences model:$$ U_{ijt} = \beta_1p_{jt} + \beta_{2}q_{jt} + \beta_3^\prime X_{jt} + \xi_{jt} + \varepsilon_{ijt} ,   $$where the subscript $ijt$ refers to student $i$ in school $j$ in market $t$. The variable $p_{jt}$ denotes the tuition charged by the school. The variable $q_{jt}$ is school's value added measure. The vector $X_{jt}$ groups other observable characteristics of the school. As usual, $\xi_{jt}$ captures school's unobserved (to the econometrician) characteristics that are relevant for the student's decision. Finally, $\varepsilon_{ijt}$ is an idiosyncratic Type I Extreme Value error term.
+     1. Aggregate the data at the school level. Construct market shares for schools.      
+     2. Using the inversion for the multinomial logit model with aggregate dataseen in class, estimate the model by OLS. In the $X_{jt}$ vector include the following variables: rural,  laica, pub, jec, and a constant. Report and comment your estimates.    
+     3. The variables price and quality are very likely endogenous. Estimate the model by 2SLS, instrumenting both price and quality. Use the following sets of instruments:     
+        - v\_u, porc\_zona, share\_prio    - sum of competitors' exogenous characteristics (all variables in $X_{jt}$)    - average of competitors' exogenous characteristics    
+        - v\_u, porc\_zona, share\_prio, sum of competitors' exogenous characteristics    
+        - v\_u, porc\_zona, share\_prio, average of competitors' exogenous characteristics Estimate one different model for each set of instruments. Report and comment your results. Compare your estimates with those obtained by OLS. 
+        
+## Individual Level Data 
+
+This section utilizes the original individual level data. 
+  1.We are interested in the following preferences model:
+  $$U_{ijt}=\beta_1p_{jt}+\beta_{2}q_{jt}+\beta_3^\prime X_{jt}+\beta_4d_{ijt}+\varepsilon_{ijt}$$ where we have added the variable $d_{ijt}$, denoting distance from home to school $j$ for student $i$ in market $t$. We have also abstracted from the existence of any unobserved school characteristic. Note that, with individual level data, the constant in $X_{jt}$ is 1 everywhere, except for the outside alternative, where it is 0. Write down the likelihood function of this model.        
+  2. Estimate the model by maximum likelihood, using the Nelder-Mead (simplex) algorithm for optimization. Report and comment your results.    
+  3. Estimate the model by maximum likelihood, using any derivative-based algorithm for optimization (e.g. Newton). Use numerical derivatives to approximate both the gradient and the hessian. Report and comment your results.
+  4. Estimate the model by maximum likelihood, using any derivative-based algorithm for optimization (e.g. Newton). Use numerical derivatives to approximate the gradient, and use the BFGS approximation for the hessian. Report and comment your results.    
+  5. Write down the analytical gradient of the model.    
+  6. Estimate the model by maximum likelihood, using any derivative-based algorithm for optimization (e.g. Newton). Code the analytical gradient, and use it as part of your optimization routine. Use the BFGS approximation for the hessian. Report and comment your results.    
+  7. Write down the analytical hessian of the model.    
+  8. Estimate the model by maximum likelihood, using any derivative-based algorithm for optimization (e.g. Newton). Code the analytical gradient, as well as the analytical hessian, and use them as part of your optimization routine. Report and comment your results.    
+  9. How similar are all of the estimates? How do the different estimation routines compare in terms of speed?    
+  10. We are now interested in the following preferences model:
+  
+  $$U_{ijt}=\beta_1p_{jt}+\beta_{2}q_{jt}+\beta_3^\prime X_{jt}+\beta_4d_{ijt}+\xi_{jt}+\varepsilon_{ijt}$$ where we have added back the $\xi_{jt}$ term. Define $\delta_{jt} = \beta_1p_{jt} +\beta_{2}q_{jt} + \beta_3^\prime X_{jt} + \xi_{jt}$. Thus, preferences can be expressed as,$$ U_{ijt} = \delta_{jt} + \beta_4 d_{ijt} + \varepsilon_{ijt} .   $$Estimate the latter specification by maximum likelihood. You may use any optimization algorithm of your preference. Report only the estimate for the $\beta_4$ coefficient.    
+  11. Estimate the following specification by 2SLS:
+  
+  $$\hat\delta_{jt}=\beta_1p_{jt}+\beta_{2}q_{jt}+\beta_3^\prime X_{jt}+\xi_{jt}$$
+  Use the same sets of instruments as in question 3 in the Aggregate Datasection to instrument for both price and quality. Report and comment your estimates.    
+  12. We are now interested in the following preferences model:
+  
+  $$ U_{ijt} = \beta_1p_{jt} + \beta_{2i}q_{jt} + \beta_3^\prime X_{jt} + \beta_4 d_{ijt} + \xi_{jt} + \varepsilon_{ijt} $$,where $\beta_{2i} = \beta_2 + \Sigma_r z_{ir}\beta_{2r} $, and $z_{ir}\in \{\mbox{edMad\_hs, edMad\_mths, edMad\_miss}\}$. Define $\delta_{jt} = \beta_1p_{jt} +\beta_{2}q_{jt} + \beta_3^\prime X_{jt} + \xi_{jt}$. Thus, $$ U_{ijt} = \delta_{jt} + (\beta_{2i}-\beta_2)q_{jt} + \beta_4 d_{ijt} + \varepsilon_{ijt} .   $$Estimate all parameters of the model in two steps, i.e. by maximum likelihood and 2SLS, just as you did in questions 10. and 11. You may use any optimization algorithm of your preference. Use the same sets of instruments as in question 3 in the Aggregate Data section to instrument for both price and quality. Report and comment your results. 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	fig.height = 4,
+	fig.width = 6,
+	message = FALSE,
+	warning = FALSE,
+	cache = TRUE,
+	digits = 2,
+	width = 48
+
+)
+```
+
+```{r, include=FALSE}
+options(	scipen =   999  )
+```
+
+
+```{r liberias, include=FALSE}
+library(readr)
+library(dplyr)
+library(fixest) #para hacer todo lo de arturo
+```
+
+```{r datos, include=FALSE}
+data_ps2 <- read_csv("data_ps2.csv")
+```
+
+```{r preg1 aggregate data}
+data_agg <- data_ps2 %>%
+  group_by(market) %>%
+  filter(choice==1) %>% 
+  mutate(students_market=n()) %>% 
+  group_by(schoolid) %>% 
+  mutate(students=sum(choice)) %>% 
+  select(-(3:10)) %>%
+  slice(1) %>%
+  ungroup() %>%
+  mutate(marketShare=students/students_market) %>%
+  arrange(schoolid)
+
+data_agg_1 <- data_agg %>% 
+  mutate(log_mkt_sh=log(marketShare)) %>% 
+  filter(!(schoolid %in% 1:5)) %>% 
+  left_join(data_agg %>% 
+              select(schoolid,marketShare) %>% 
+              filter(schoolid %in% 1:5),by=c("market"="schoolid"),suffix=c("","_s0")) %>% mutate(inversion=log_mkt_sh-log(marketShare_s0)) 
+
+reg1_2 <- feols(data=data_agg_1,inversion~price+pub+rural+laica+pub+jec)
+
+#reportar esta cosa
+
+
+
+```
+
+```{r report ,results='asis'}
+etable(reg1_2,tex=T)
+```
+
+```{r 2sls}
+reg1_3 <- feols(data=data_agg_1,inversion~pub+rural+laica+pub+jec|price+quality~v_u+porc_zona+share_prio, se="hetero")
+
+data_comp <- data_agg_1  %>% group_by(market) %>% 
+  mutate(sumaPub=sum(pub),sumaRural=sum(rural),
+         sumaLaica=sum(laica),sumaJec=sum(jec)) %>% ungroup() %>% 
+  mutate(sumaPub=sumaPub-pub,sumaRural=sumaRural-rural,
+         sumaLaica=sumaLaica-laica,sumaJec=sumaJec-jec)
+ 
+reg2_3 <- feols(data=data_comp,inversion~pub+rural+laica+jec|price+quality~sumaPub+sumaRural+sumaLaica+sumaJec, se="hetero")
+
+#AVERAGE 
+data_comp <- data_agg_1 %>%  group_by(market) %>% 
+  mutate(sumaPub=sum(pub),sumaRural=sum(rural),
+         sumaLaica=sum(laica),sumaJec=sum(jec),count=n()-1) %>% ungroup() %>% 
+  mutate(avgPub=(sumaPub-pub)/count,avgRural=(sumaRural-rural)/count,
+         avgLaica=(sumaLaica-laica)/count,avgJec=(sumaJec-jec)/count) %>% 
+  mutate(sumaPub=sumaPub-pub,sumaRural=sumaRural-rural,
+         sumaLaica=sumaLaica-laica,sumaJec=sumaJec-jec)
+
+ reg3_3 <- feols(data=data_comp,inversion~pub+rural+laica+jec|price+quality~avgPub+avgRural+avgLaica+avgJec, se="hetero")
+ 
+#d)
+reg4_3 <- feols(data=data_comp,inversion~pub+rural+laica+jec|price+quality~v_u+porc_zona+share_prio+sumaPub+sumaRural+sumaLaica+sumaJec, se="hetero")
+#e)
+reg5_3 <- feols(data=data_comp,inversion~pub+rural+laica+jec|price+quality~v_u+porc_zona+share_prio+avgPub+avgRural+avgLaica+avgJec, se="hetero")
+
+```
+```{r, results='asis'}
+etable(reg1_3,reg2_3,reg3_3, reg4_3,reg5_3,fitstat = ~.+ivf1,tex=T)
+```
+
+
